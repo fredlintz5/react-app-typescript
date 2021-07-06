@@ -1,4 +1,5 @@
-import { useEffect, useState, FunctionComponent } from 'react'
+import { useEffect, useState, useCallback, FunctionComponent } from 'react'
+import debounce from 'lodash/debounce'
 
 import './Table.css'
 
@@ -43,14 +44,16 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
   // hooks
   useEffect(() => setLocalRows([...rows]), [rows])
   useEffect(() => setShowEmptyState(!localRows?.length), [localRows])
+
+  const debouncedFilter = useCallback(debounce(search => filterRows(search), 1000), []);
   
   // methods
   const handleSearchEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { target: { value } } = e;
     const newValue = value?.trim().toLowerCase()
     setSearchText(newValue)
-    // 'debounce' search
-    setTimeout(() => filterRows(newValue), 1000)
+    // filterRows(newValue)
+    debouncedFilter(newValue)
   }
 
   const currentSortDirection = (sortField: string): Sort => {
@@ -84,7 +87,6 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
   }
 
   function filterRows (search: string) {
-    console.log('filter rows', search)
     const filteredRows = !!search.length
       ? [...rows].filter(r => !!Object.values(r).filter(v => `${v}`?.toLowerCase().includes(search)).length)
       : [...rows];
