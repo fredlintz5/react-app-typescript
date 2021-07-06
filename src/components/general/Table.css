@@ -1,0 +1,57 @@
+.table {
+  width: 100%;
+}
+
+.table td, .table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table tr:nth-child(even){background-color: #f2f2f2;}
+
+.table tr:hover {background-color: #ddd;}
+
+.table.empty-state {
+  min-height: 300px;
+  text-align: center;
+}
+.table.empty-state tr:hover {
+  background-color: white;
+}
+
+.table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: hsl(168, 89%, 58%);
+  color: rgb(0, 0, 0);
+  position: relative;
+}
+th.sort, th.sort label, .sort-direction {
+  cursor: pointer;
+}
+
+.sort-direction {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.sort-direction.NONE::after {
+  content: '\01F447';
+  visibility: hidden;
+}
+.sort-direction.DESC::after {
+  content: '\01F447';
+}
+.sort-direction.ASC::after {
+  content: '\01F446';
+}
+
+.loading {
+  min-height: 300px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
