@@ -1,5 +1,7 @@
-import { useEffect, useState, useCallback, FunctionComponent } from 'react'
+import { useEffect, useState, useMemo, FunctionComponent } from 'react'
 import debounce from 'lodash/debounce'
+
+import { Pagination, PaginationProps } from './Pagination';
 
 import './Table.css'
 
@@ -8,6 +10,7 @@ export interface TableProps {
   show?: boolean
   loading?: boolean
   hasSearch?: boolean
+  placeholder?: string
   rows: Array<Object>
   columns: Array<Column>
 }
@@ -33,25 +36,32 @@ enum Sort {
 
 export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
   // props
-  const { show, rows, columns, id: tableId, hasSearch, loading = false } = props;
+  const { show, rows, columns, id: tableId, hasSearch, loading = false, placeholder } = props;
 
   // data
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
-  const [sortedFilteredRows, setSortedFilteredRows] = useState<any[]>([]);
+  const [sortedFilteredPaginatedRows, setSortedFilteredPaginatedRows] = useState<any[]>([]);
+  const [perPage, setPerPage] = useState(5);
   const [searchText, setSearchText] = useState<string>('');
   const [sortMap, setSortMap] = useState<SortMap>({ direction: Sort.NONE });
   const [showEmptyState, setShowEmptyState] = useState<boolean>(false);
+  const [paginationProps] = useState<PaginationProps>({
+    perPage,
+    total: 0,
+    id: 'user-list-table-pagination',
+    setPerPage,
+  })
 
   // hooks
   useEffect(() => setFilteredRows([...rows]), [rows])
   
   useEffect(() => {
-    setSortedFilteredRows([...sortRows(sortMap, filteredRows)])
-  }, [filteredRows, sortMap])
+    setSortedFilteredPaginatedRows([...sortRows(sortMap, filteredRows)].filter((_, index) => index < perPage))
+  }, [filteredRows, sortMap, perPage])
   
   useEffect(() => setShowEmptyState(!filteredRows?.length), [filteredRows])
 
-  const debouncedFilter = useCallback(debounce(({ search, rows }) => setFilteredRows(filterRows(search, rows)), 1000), []);
+  const debouncedFilter = useMemo(() => debounce(({ search, rows }) => setFilteredRows(filterRows(search, rows)), 600), []);
   
   // methods
   const handleSearchEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +71,9 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
     debouncedFilter({ search: newValue, rows })
   }
   
-  const changeSortDirection = (sortField: string): void => {
+  const changeSortDirection = (isSortable: boolean | undefined, sortField: string): void => {
+    if (!isSortable) return;
+
     const { field, direction } = sortMap;
     let newDirection = Sort.ASC;
 
@@ -76,22 +88,21 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
     setSortMap({ field: sortField, direction: newDirection })
   }
 
-  function filterRows (search: string, rows: Object[]) {
+  const filterRows = (search: string, rows: Object[]) => {
     return !!search.length
       ? rows.filter(r => !!Object.values(r).filter(v => `${v}`?.toLowerCase().includes(search)).length)
       : [...rows];
   }
-  
+
   const sortRows = ({ field, direction }: SortMap, rowsToSort: Object[]) :Object[] => {
-  
     return field && direction !== Sort.NONE
       ? [...rowsToSort].sort((a:any, b:any) => direction === Sort.ASC
         ? (b[field] > a[field]) ? -1 : 1
         : (b[field] < a[field]) ? -1 : 1)
       : [...rowsToSort];
   }
-  
-  const currentSortDirection = (sortField: string, sortMap: SortMap): Sort => {
+
+  const currentSortDirection = (sortField: string, sortMap: SortMap): Sort  => {
     const { field, direction } = sortMap;
   
     if (field === sortField) {
@@ -115,7 +126,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                 {hasSearch &&
                   <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder={placeholder}
                     style={{width: '100%', boxSizing: 'border-box', padding: '0.65rem'}}
                     value={searchText} onChange={e => handleSearchEvent(e)}/>}
                 <table className={`table ${showEmptyState && 'empty-state'}`}>
@@ -125,7 +136,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                         <th
                           className={`${thClass || ''} ${sortable ? 'sort' : ''}`}
                           key={`${tableId}-th-${label}-${Date.now()}`}
-                          onClick={() => changeSortDirection(field)}>
+                          onClick={() => changeSortDirection(sortable, field)}>
                             <label>{label}</label>
                             {sortable &&
                               <label className={`sort-direction ${currentSortDirection(field, sortMap)}`}></label>}
@@ -136,7 +147,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                   <tbody>
                     {showEmptyState
                       ? <tr><td>No Results Found.</td></tr>
-                      : sortedFilteredRows.map(row => (
+                      : sortedFilteredPaginatedRows.map(row => (
                       <tr key={`${tableId}-tr-${row?.id || Date.now}`}>{columns.map(({ field, clickAction }) => (
                         <td key={`${field}-${row.id}`}>
                           {clickAction
@@ -146,6 +157,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                       </tr>))}
                   </tbody>
                 </table>
+                <Pagination {...paginationProps}/>
               </div>
           }
         </div>
@@ -159,5 +171,6 @@ Table.defaultProps = {
   show: true,
   loading: false,
   hasSearch: false,
+  placeholder: 'Search...',
   id: `table-${Date.now()}`
 };
