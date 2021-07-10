@@ -15,8 +15,8 @@ export interface TableProps {
 export interface Column {
   label: string
   field: string
-  sortable?: boolean
   thClass?: string
+  sortable?: boolean
   clickAction?: Function
 }
 
@@ -36,38 +36,29 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
   const { show, rows, columns, id: tableId, hasSearch, loading = false } = props;
 
   // data
-  const [localRows, setLocalRows] = useState<any[]>([]);
+  const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [sortedFilteredRows, setSortedFilteredRows] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [sortMap, setSortMap] = useState<SortMap>({ direction: Sort.NONE });
   const [showEmptyState, setShowEmptyState] = useState<boolean>(false);
 
   // hooks
-  useEffect(() => setLocalRows([...rows]), [rows])
-  useEffect(() => setShowEmptyState(!localRows?.length), [localRows])
+  useEffect(() => setFilteredRows([...rows]), [rows])
+  
+  useEffect(() => {
+    setSortedFilteredRows([...sortRows(sortMap, filteredRows)])
+  }, [filteredRows, sortMap])
+  
+  useEffect(() => setShowEmptyState(!filteredRows?.length), [filteredRows])
 
-  const debouncedFilter = useCallback(debounce(search => filterRows(search), 1000), []);
+  const debouncedFilter = useCallback(debounce(({ search, rows }) => setFilteredRows(filterRows(search, rows)), 1000), []);
   
   // methods
   const handleSearchEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { target: { value } } = e;
     const newValue = value?.trim().toLowerCase()
     setSearchText(newValue)
-    // filterRows(newValue)
-    debouncedFilter(newValue)
-  }
-
-  const currentSortDirection = (sortField: string): Sort => {
-    const { field, direction } = sortMap;
-
-    if (field === sortField) {
-      if (direction === Sort.ASC) {
-        return Sort.ASC
-      }
-      if (direction === Sort.DESC) {
-        return Sort.DESC
-      }
-    }
-    return Sort.NONE
+    debouncedFilter({ search: newValue, rows })
   }
   
   const changeSortDirection = (sortField: string): void => {
@@ -83,27 +74,35 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
       }
     }
     setSortMap({ field: sortField, direction: newDirection })
-    sortRows()
   }
 
-  function filterRows (search: string) {
-    const filteredRows = !!search.length
-      ? [...rows].filter(r => !!Object.values(r).filter(v => `${v}`?.toLowerCase().includes(search)).length)
+  function filterRows (search: string, rows: Object[]) {
+    return !!search.length
+      ? rows.filter(r => !!Object.values(r).filter(v => `${v}`?.toLowerCase().includes(search)).length)
       : [...rows];
-
-    setLocalRows(filteredRows)
   }
-
-  const sortRows = () => {
-    const { field, direction } = sortMap
-
-    const sortedRows = field && direction !== Sort.NONE
-      ? [...localRows].sort((a: any, b: any) => direction === Sort.ASC
+  
+  const sortRows = ({ field, direction }: SortMap, rowsToSort: Object[]) :Object[] => {
+  
+    return field && direction !== Sort.NONE
+      ? [...rowsToSort].sort((a:any, b:any) => direction === Sort.ASC
         ? (b[field] > a[field]) ? -1 : 1
         : (b[field] < a[field]) ? -1 : 1)
-      : [...localRows];
-
-    setLocalRows(sortedRows)
+      : [...rowsToSort];
+  }
+  
+  const currentSortDirection = (sortField: string, sortMap: SortMap): Sort => {
+    const { field, direction } = sortMap;
+  
+    if (field === sortField) {
+      if (direction === Sort.ASC) {
+        return Sort.ASC
+      }
+      if (direction === Sort.DESC) {
+        return Sort.DESC
+      }
+    }
+    return Sort.NONE
   }
 
   return (
@@ -129,7 +128,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                           onClick={() => changeSortDirection(field)}>
                             <label>{label}</label>
                             {sortable &&
-                              <label className={`sort-direction ${currentSortDirection(field)}`}></label>}
+                              <label className={`sort-direction ${currentSortDirection(field, sortMap)}`}></label>}
                         </th>
                       ))}
                     </tr>
@@ -137,12 +136,12 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                   <tbody>
                     {showEmptyState
                       ? <tr><td>No Results Found.</td></tr>
-                      : localRows.map(lr => (
-                      <tr key={`${tableId}-tr-${lr?.id || Date.now}`}>{columns.map(({ field, clickAction }) => (
-                        <td key={`${field}-${lr.id}`}>
+                      : sortedFilteredRows.map(row => (
+                      <tr key={`${tableId}-tr-${row?.id || Date.now}`}>{columns.map(({ field, clickAction }) => (
+                        <td key={`${field}-${row.id}`}>
                           {clickAction
-                            ? <button className="anchor" onClick={() => clickAction(lr)}>{lr[field]}</button>
-                            : <div>{lr[field]}</div>}
+                            ? <button className="anchor" onClick={() => clickAction(row)}>{row[field]}</button>
+                            : <div>{row[field]}</div>}
                         </td>))}
                       </tr>))}
                   </tbody>
@@ -160,5 +159,5 @@ Table.defaultProps = {
   show: true,
   loading: false,
   hasSearch: false,
-  id: `unnamed-table-${Date.now()}`
+  id: `table-${Date.now()}`
 };
