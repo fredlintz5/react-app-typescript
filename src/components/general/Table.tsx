@@ -44,7 +44,7 @@ export const Table = (props: TableProps) => {
     loading = false,
     hasSearch = false,
     placeholder = 'Search...',
-    id: tableId = `table-${Date.now()}`,
+    id: tableId = 'table',
     hasPagination = true,
   } = props;
 
@@ -165,7 +165,7 @@ export const Table = (props: TableProps) => {
                       {!showEmptyState && columns.map(({ label, thClass, sortable, field }) => (
                         <th
                           className={`${thClass || ''} ${sortable ? 'sort' : ''}`}
-                          key={`${tableId}-th-${label}-${Date.now()}`}
+                          key={`${tableId}-th-${label}`}
                           onClick={() => changeSortDirection(sortable, field)}>
                             <label>{label}</label>
                             {sortable &&
@@ -178,7 +178,7 @@ export const Table = (props: TableProps) => {
                     {showEmptyState
                       ? <tr><td>No Results Found.</td></tr>
                       : sortedFilteredPaginatedRows.map(row => (
-                      <tr key={`${tableId}-tr-${row?.id || Date.now}`}>{columns.map(({ field, clickAction }) => (
+                      <tr key={`${tableId}-tr-${row?.id}`}>{columns.map(({ field, clickAction }) => (
                         <td key={`${field}-${row.id}`}>
                           {clickAction
                             ? <button className="anchor" onClick={() => clickAction(row)}>{row[field]}</button>

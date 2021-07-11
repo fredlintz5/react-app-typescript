@@ -18,7 +18,7 @@ export const Pagination = (props: PaginationProps) => {
     perPage = 5,
     currentPage = 0,
     pageOptions = [5, 10, 20],
-    id: paginationId = `pagination-${Date.now()}`
+    id: paginationId = 'pagination'
   } = props
   
   // state

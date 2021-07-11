@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { listUsers, User } from '../services/UserService';
+import { listUsers, User } from '../../services/UserService';
 
-import { Table, TableProps } from './../components/general/Table';
+import { Table, TableProps } from '../../components/general/Table';
 
-export const UserList = () => {
+export function UserList() {
   // state
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
