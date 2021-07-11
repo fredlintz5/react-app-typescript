@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import debounce from 'lodash/debounce'
 
 import { Pagination, PaginationProps } from './Pagination';
@@ -66,6 +66,7 @@ export const Table = (props: TableProps) => {
   })
 
   // hooks
+  const searchRef = useRef<HTMLInputElement>(null)
   const debouncedFilter = useMemo(() => {
     return debounce(({ search, rows }) => {
       setFilteredRows(filterRows(search, rows))
@@ -73,6 +74,7 @@ export const Table = (props: TableProps) => {
     }, 600)
   }, []);
   
+  useEffect(() => searchRef.current?.focus(), [searchRef, hasSearch, loading])
   useEffect(() => {
     setFilteredRows([...rows])
     setPaginationProps(p => ({ ...p, total: rows.length }))
@@ -153,6 +155,7 @@ export const Table = (props: TableProps) => {
                 {hasSearch &&
                   <input
                     type="text"
+                    ref={searchRef}
                     placeholder={placeholder}
                     style={{width: '100%', boxSizing: 'border-box', padding: '0.65rem'}}
                     value={searchText} onChange={e => handleSearchEvent(e)}/>}

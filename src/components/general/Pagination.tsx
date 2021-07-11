@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 export interface PaginationProps {
   perPage?: number
   currentPage?: number
-  pageOptions?: number[]
+  pageOptions?: Array<number>
   total: number
   id: string
   setPerPage: Function
