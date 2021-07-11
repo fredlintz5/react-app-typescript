@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export interface PaginationProps {
   perPage?: number
@@ -7,38 +7,62 @@ export interface PaginationProps {
   total: number
   id: string
   setPerPage: Function
+  setCurrentPage: Function
 }
 
-export const Pagination: FunctionComponent<PaginationProps> = (props: PaginationProps) => {
-  const { perPage, pageOptions, setPerPage } = props
+export const Pagination = (props: PaginationProps) => {
+  const {
+    total,
+    setPerPage,
+    setCurrentPage,
+    perPage = 5,
+    currentPage = 0,
+    pageOptions = [5, 10, 20],
+    id: paginationId = `pagination-${Date.now()}`
+  } = props
   
   // state
-  const [localPerPage, setLocalPerPage] = useState(perPage)
+  const [lowerIndex, setLowerIndex] = useState(currentPage * perPage)
+  const [upperIndex, setUpperIndex] = useState(currentPage * perPage + perPage)
 
   // hooks
-  useEffect(() => setPerPage(localPerPage), [localPerPage, setPerPage])
+  useEffect(() => setPerPage(perPage), [perPage, setPerPage])
+  useEffect(() => {
+    setCurrentPage(currentPage)
+    setLowerIndex(currentPage * perPage)
+    setUpperIndex(currentPage * perPage + perPage)
+  }, [currentPage, setCurrentPage, perPage])
 
   // methods
   const handlePageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { target: { value } } = e;
-    setLocalPerPage(Number(value));
+    setPerPage(Number(value));
+    setCurrentPage(0);
+  }
+  const handleCurrentPageChange = (index: number) => {
+    setCurrentPage(index);
   }
 
-  
   return (
-    <div>
-      <select className="is-block ml-auto p-1 mt-1" value={localPerPage} onChange={(e) => handlePageChange(e)}>
-        {pageOptions?.map(po => (
-          <option value={po} key={po}>{po}</option>
-        ))}
-      </select>
+    <div className="pagination is-flex m-1 has-aligned-items-center">
+      <div className="buttons">
+        <button
+          className="button"
+          disabled={currentPage === 0}
+          onClick={() => handleCurrentPageChange(currentPage - 1)}>&#60;</button>
+        <button
+          className="button"
+          disabled={(currentPage + 1) * perPage >= total}
+          onClick={() => handleCurrentPageChange(currentPage + 1)}>&#62;</button>
+      </div>
+      <div>Showing {lowerIndex + 1} - {upperIndex > total ? total : upperIndex}</div>
+      <div className="ml-auto">
+        <select className="p-1" value={perPage} onChange={(e) => handlePageChange(e)}>
+          {pageOptions?.map(po => (
+            <option value={po} key={`${paginationId}-${po}`}>{po} Per Page</option>
+          ))}
+        </select>
+      </div>
     </div>
   )
 }
-
-Pagination.defaultProps = {
-  perPage: 5,
-  currentPage: 0,
-  pageOptions: [5, 10, 20],
-  id: `pagination-${Date.now()}`
-};

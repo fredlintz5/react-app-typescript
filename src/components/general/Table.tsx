@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, FunctionComponent } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import debounce from 'lodash/debounce'
 
 import { Pagination, PaginationProps } from './Pagination';
@@ -13,6 +13,7 @@ export interface TableProps {
   placeholder?: string
   rows: Array<Object>
   columns: Array<Column>
+  hasPagination?: boolean
 }
 
 export interface Column {
@@ -34,34 +35,60 @@ enum Sort {
   NONE = 'NONE',
 }
 
-export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
+export const Table = (props: TableProps) => {
   // props
-  const { show, rows, columns, id: tableId, hasSearch, loading = false, placeholder } = props;
+  const {
+    rows,
+    columns,
+    show = true,
+    loading = false,
+    hasSearch = false,
+    placeholder = 'Search...',
+    id: tableId = `table-${Date.now()}`,
+    hasPagination = true,
+  } = props;
 
   // data
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [sortedFilteredPaginatedRows, setSortedFilteredPaginatedRows] = useState<any[]>([]);
   const [perPage, setPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(0);
   const [searchText, setSearchText] = useState<string>('');
   const [sortMap, setSortMap] = useState<SortMap>({ direction: Sort.NONE });
   const [showEmptyState, setShowEmptyState] = useState<boolean>(false);
-  const [paginationProps] = useState<PaginationProps>({
+  const [paginationProps, setPaginationProps] = useState<PaginationProps>({
     perPage,
     total: 0,
     id: 'user-list-table-pagination',
+    currentPage: 0,
     setPerPage,
+    setCurrentPage,
   })
 
   // hooks
-  useEffect(() => setFilteredRows([...rows]), [rows])
+  const debouncedFilter = useMemo(() => {
+    return debounce(({ search, rows }) => {
+      setFilteredRows(filterRows(search, rows))
+      setCurrentPage(0)
+    }, 600)
+  }, []);
   
   useEffect(() => {
-    setSortedFilteredPaginatedRows([...sortRows(sortMap, filteredRows)].filter((_, index) => index < perPage))
-  }, [filteredRows, sortMap, perPage])
+    setFilteredRows([...rows])
+    setPaginationProps(p => ({ ...p, total: rows.length }))
+  }, [rows])
+  
+  useEffect(() => {
+    const lowerIndex = currentPage * perPage
+    const upperIndex = lowerIndex + perPage
+    const updatedRows = [...sortRows(sortMap, filteredRows)]
+    const paginatedRows = updatedRows.filter((_, index) => index >= lowerIndex && index < upperIndex)
+    
+    setSortedFilteredPaginatedRows(paginatedRows)
+    setPaginationProps(p => ({ ...p, total: updatedRows.length, currentPage, perPage }))
+  }, [filteredRows, sortMap, perPage, currentPage])
   
   useEffect(() => setShowEmptyState(!filteredRows?.length), [filteredRows])
-
-  const debouncedFilter = useMemo(() => debounce(({ search, rows }) => setFilteredRows(filterRows(search, rows)), 600), []);
   
   // methods
   const handleSearchEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +144,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
   }
 
   return (
-    <div>
+    <div className="table">
       {show ?
         <div>
           {loading
@@ -157,7 +184,7 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
                       </tr>))}
                   </tbody>
                 </table>
-                <Pagination {...paginationProps}/>
+                {hasPagination && <Pagination {...paginationProps}/>}
               </div>
           }
         </div>
@@ -166,11 +193,3 @@ export const Table: FunctionComponent<TableProps> = (props: TableProps) => {
     </div> 
   )
 }
-
-Table.defaultProps = {
-  show: true,
-  loading: false,
-  hasSearch: false,
-  placeholder: 'Search...',
-  id: `table-${Date.now()}`
-};
