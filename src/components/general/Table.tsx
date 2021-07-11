@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import debounce from 'lodash/debounce'
 
-import { Pagination, PaginationProps } from './Pagination';
+import { Pagination, PaginationProps } from './Pagination'
+import { Loader } from '../../components/general/Loader'
 
 import './Table.css'
 
@@ -149,47 +150,43 @@ export const Table = (props: TableProps) => {
     <div className="table">
       {show ?
         <div>
-          {loading
-            ? <div className="loading"><div className="loader"></div></div>
-            : <div>
-                {hasSearch &&
-                  <input
-                    type="text"
-                    ref={searchRef}
-                    placeholder={placeholder}
-                    style={{width: '100%', boxSizing: 'border-box', padding: '0.65rem'}}
-                    value={searchText} onChange={e => handleSearchEvent(e)}/>}
-                <table className={`table ${showEmptyState && 'empty-state'}`}>
-                  <thead>
-                    <tr>
-                      {!showEmptyState && columns.map(({ label, thClass, sortable, field }) => (
-                        <th
-                          className={`${thClass || ''} ${sortable ? 'sort' : ''}`}
-                          key={`${tableId}-th-${label}`}
-                          onClick={() => changeSortDirection(sortable, field)}>
-                            <label>{label}</label>
-                            {sortable &&
-                              <label className={`sort-direction ${currentSortDirection(field, sortMap)}`}></label>}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {showEmptyState
-                      ? <tr><td>No Results Found.</td></tr>
-                      : sortedFilteredPaginatedRows.map(row => (
-                      <tr key={`${tableId}-tr-${row?.id}`}>{columns.map(({ field, clickAction }) => (
-                        <td key={`${field}-${row.id}`}>
-                          {clickAction
-                            ? <button className="anchor" onClick={() => clickAction(row)}>{row[field]}</button>
-                            : <div>{row[field]}</div>}
-                        </td>))}
-                      </tr>))}
-                  </tbody>
-                </table>
-                {hasPagination && <Pagination {...paginationProps}/>}
-              </div>
-          }
+          <Loader isLoading={loading}/>
+          {hasSearch &&
+            <input
+              type="text"
+              ref={searchRef}
+              placeholder={placeholder}
+              style={{width: '100%', boxSizing: 'border-box', padding: '0.65rem'}}
+              value={searchText} onChange={e => handleSearchEvent(e)}/>}
+          <table className={`table ${showEmptyState && 'empty-state'}`}>
+            <thead>
+              <tr>
+                {!showEmptyState && columns.map(({ label, thClass, sortable, field }) => (
+                  <th
+                    className={`${thClass || ''} ${sortable ? 'sort' : ''}`}
+                    key={`${tableId}-th-${label}`}
+                    onClick={() => changeSortDirection(sortable, field)}>
+                      <label>{label}</label>
+                      {sortable &&
+                        <label className={`sort-direction ${currentSortDirection(field, sortMap)}`}></label>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {showEmptyState
+                ? <tr><td>No Results Found.</td></tr>
+                : sortedFilteredPaginatedRows.map(row => (
+                <tr key={`${tableId}-tr-${row?.id}`}>{columns.map(({ field, clickAction }) => (
+                  <td key={`${field}-${row.id}`}>
+                    {clickAction
+                      ? <button className="anchor" onClick={() => clickAction(row)}>{row[field]}</button>
+                      : <div>{row[field]}</div>}
+                  </td>))}
+                </tr>))}
+            </tbody>
+          </table>
+          {hasPagination && <Pagination {...paginationProps}/>}
         </div>
         : ''
       }

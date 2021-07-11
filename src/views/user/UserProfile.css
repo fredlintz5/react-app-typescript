@@ -1,0 +1,6 @@
+.user-profile {
+  position: relative;
+  min-height: 85vh;
+  min-width: 85vw;
+  overflow-x: hidden;
+}

@@ -1,5 +1,6 @@
 .table {
   width: 100%;
+  position: relative;
 }
 
 .table td, .table th {
@@ -23,7 +24,7 @@
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: hsl(168, 89%, 58%);
+  background-color: rgb(54, 210, 210);
   color: rgb(0, 0, 0);
   position: relative;
 }
@@ -46,12 +47,4 @@ th.sort, th.sort label, .sort-direction {
 }
 .sort-direction.ASC::after {
   content: '\01F446';
-}
-
-.loading {
-  min-height: 300px;
-  border: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }

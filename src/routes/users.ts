@@ -1,16 +1,23 @@
-// import { lazy } from 'react'
-import { RouteProps } from 'react-router-dom'
+import { CustomRouteProps } from './index'
 
 import { UserList } from '../views/user/UserList';
 import { UserProfile } from '../views/user/UserProfile';
 
-const userRoutes :RouteProps[] = [
+export type RouteParams = {
+  userGuid: string
+}
+
+const userRoutes :CustomRouteProps[] = [
   {
+    name: 'UserList',
+    exact: true,
     path: "/users",
     component: UserList
   },
   {
-    path: "/users/:userId",
+    name: 'UserProfile',
+    exact: true,
+    path: "/users/:userGuid",
     component: UserProfile
   },
 ];

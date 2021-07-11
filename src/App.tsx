@@ -2,7 +2,7 @@ import { RouterSwitch } from './routes'
 
 const App = () => {
   return (
-    <div className="App" style={{ padding: '2rem' }}>
+    <div className="app" style={{ padding: '1rem 2rem' }}>
       <RouterSwitch />
     </div>
   );

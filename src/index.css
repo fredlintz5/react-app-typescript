@@ -7,42 +7,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.buttons  .button {
+  margin-right: .25rem;
+}
+
+.app {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
 a {
   text-decoration: underline;
   color: #3498db;
   cursor: pointer;
-}
-.buttons  .button {
-  margin-right: .25rem;
-}
-.button:active {
-  box-shadow: 0 1px #666;
-  transform: translateY(2px);
-}
-button.anchor {
-  text-decoration: underline;
-  color: #3498db;
-  cursor: pointer;
-  background: unset;
-  border: unset;
-}
-button:disabled {
-  cursor: not-allowed;
-  box-shadow: unset;
-}
-.button {
-  display: inline-block;
-  font-weight: 400;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  border: 1px solid transparent;
-  cursor: pointer;
-  padding: .375rem .75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: .25rem;
-  box-shadow: 0 2px #999;
 }
 
 .is-block {
@@ -53,6 +30,12 @@ button:disabled {
 }
 .has-aligned-items-center {
   align-items: center;
+}
+.has-position-relative {
+  position: relative;
+}
+.has-position-absolute {
+  position: absolute;
 }
 .ml-auto {
   margin-left: auto;
@@ -81,18 +64,3 @@ button:disabled {
 .mt-1 {
   margin-top: .25rem;
 }
-
-.loader {
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-

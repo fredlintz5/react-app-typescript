@@ -14,6 +14,11 @@ export interface User {
   tags: Array<string>,
 }
 
+const actions = {
+  listUsers,
+  getUser
+}
+
 const usersData: User[] = [
   {
     "id": "60e1c68c6957ef7af5930734",
@@ -339,12 +344,15 @@ const usersData: User[] = [
   }
 ]
 
-export function listUsers(): Promise<User[]> {
+function listUsers(): Promise<User[]> {
   return new Promise(resolve => setTimeout(() =>
     resolve(usersData), 1500));
 }
 
-export function getUser(userId: String): Promise<User> {
+
+function getUser(userGuid: String): Promise<User> {
   return new Promise<User>(resolve => setTimeout(() =>
-    resolve(usersData.filter(user => user.id === userId)[0]), 1500));
+    resolve(usersData.filter(user => user.guid === userGuid)[0]), 1500));
 }
+
+export default actions

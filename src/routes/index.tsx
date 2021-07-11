@@ -1,8 +1,11 @@
 import users from './users'
 import general from './general'
 import { BrowserRouter as Router, Route, RouteProps, Switch } from 'react-router-dom'
+export interface CustomRouteProps extends RouteProps {
+  name?: string
+}
 
-const routes :RouteProps[] = [
+const routes :CustomRouteProps[] = [
   ...users,
   ...general
 ]
@@ -11,20 +14,15 @@ export const RouterSwitch = () => {
   return (
     <Router>
       <Switch>
-        {routes.map((route: RouteProps, i) => {
-          return (<RouteWithSubRoutes key={i} {...route} />)
+        {routes.map((route: CustomRouteProps, i) => {
+          return (<Route
+            key={route.name}
+            path={route.path}
+            exact={route.exact}
+            render={props => (<>{route.component && <route.component {...props}/>}</>)}
+          />)
         })}
       </Switch>
     </Router>
   )
-}
-
-function RouteWithSubRoutes(route: RouteProps) {
-  return (
-    <Route
-      path={route.path}
-      exact={route.exact}
-      render={props => (<>{route.component && <route.component {...props}/>}</>)}
-    />
-  );
 }
