@@ -1,4 +1,4 @@
-import './Loader.css'
+import './Loader.scss'
 
 export interface LoaderProps {
   isLoading: boolean

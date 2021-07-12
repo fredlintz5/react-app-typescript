@@ -4,7 +4,7 @@ import debounce from 'lodash/debounce'
 import { Pagination, PaginationProps } from './Pagination'
 import { Loader } from '../../components/general/Loader'
 
-import './Table.css'
+import './Table.scss'
 
 export interface TableProps {
   id?: string

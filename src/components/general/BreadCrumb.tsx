@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CustomRouteProps } from "../../routes";
 
-import './BreadCrumb.css'
+import './BreadCrumb.scss'
 
 export interface BreadCrumbProps {
   paths: Array<CustomRouteProps>

@@ -7,7 +7,7 @@ import UserService, { User } from "../../services/UserService"
 import { Loader } from '../../components/general/Loader'
 import { PageHeader, PageHeaderProps } from '../../components/general/PageHeader'
 
-import './UserProfile.css'
+import './UserProfile.scss'
 
 export function UserProfile() {
   let { userGuid } = useParams<UserRouteParams>()

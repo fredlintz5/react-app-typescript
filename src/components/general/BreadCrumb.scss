@@ -1,0 +1,28 @@
+.breadcrumb {
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+    display: flex;
+    li {
+      list-style-type: none;
+      margin-right: .75rem;
+      &:after {
+        color: grey;
+        content: '\203A';
+        margin-left: .75rem;
+      }
+      &:last-child {
+        &:after {
+          content: '';
+        }
+        a {
+          pointer-events: none;
+          color: unset;
+        }
+      }
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+}
