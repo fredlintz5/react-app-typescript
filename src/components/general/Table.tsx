@@ -175,12 +175,12 @@ export const Table = (props: TableProps) => {
             </thead>
             <tbody>
               {showEmptyState
-                ? <tr><td>No Results Found.</td></tr>
+                ? <tr><td>{!loading && <p>No Results Found.</p>}</td></tr>
                 : sortedFilteredPaginatedRows.map(row => (
                 <tr key={`${tableId}-tr-${row?.id}`}>{columns.map(({ field, clickAction }) => (
                   <td key={`${field}-${row.id}`}>
                     {clickAction
-                      ? <button className="anchor" onClick={() => clickAction(row)}>{row[field]}</button>
+                      ? <button className="button anchor" onClick={() => clickAction(row)}>{row[field]}</button>
                       : <div>{row[field]}</div>}
                   </td>))}
                 </tr>))}

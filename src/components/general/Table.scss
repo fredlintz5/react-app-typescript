@@ -1,50 +1,60 @@
+@import './../../assets/variables.scss';
+
 .table {
   width: 100%;
   position: relative;
-}
-
-.table td, .table th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.table tr:nth-child(even){background-color: #f2f2f2;}
-
-.table tr:hover {background-color: #ddd;}
-
-.table.empty-state {
-  min-height: 300px;
-  text-align: center;
-}
-.table.empty-state tr:hover {
-  background-color: white;
-}
-
-.table th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: rgb(54, 210, 210);
-  color: rgb(0, 0, 0);
-  position: relative;
-}
-th.sort, th.sort label, .sort-direction {
-  cursor: pointer;
-}
-
-.sort-direction {
-  position: absolute;
-  right: 5px;
-  top: 5px;
-}
-
-.sort-direction.NONE::after {
-  content: '\01F447';
-  visibility: hidden;
-}
-.sort-direction.DESC::after {
-  content: '\01F447';
-}
-.sort-direction.ASC::after {
-  content: '\01F446';
+  &.empty-state {
+    min-height: 300px;
+    text-align: center;
+    tr:hover {
+      background-color: white;
+    }
+  }
+  tr {
+    &:nth-child(even){
+      background-color: #f2f2f2;
+    }
+    &:hover {
+      background-color: #ddd;
+    }
+    th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      text-align: left;
+      background-color: $primary;
+      color: rgb(0, 0, 0);
+      position: relative;
+      &.sort, label {
+        cursor: pointer;
+      }
+      .sort-direction {
+        cursor: pointer;
+      }
+    }
+    td, th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+  }
+  .sort-direction {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    &.NONE {
+      &::after {
+        content: $arrow-down;
+        visibility: hidden;
+      }
+    }
+    &.DESC {
+      &::after {
+        content: $arrow-down;
+      }
+    }
+    &.ASC {
+      &::after {
+        content: $arrow-up;
+      }
+    }
+  }
 }

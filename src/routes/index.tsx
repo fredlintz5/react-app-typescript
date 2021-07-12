@@ -15,12 +15,12 @@ export const RouterSwitch = () => {
     <Router>
       <Switch>
         {routes.map((route: CustomRouteProps, i) => {
-          return (<Route
+          return <Route
             key={route.name}
             path={route.path}
             exact={route.exact}
             render={props => (<>{route.component && <route.component {...props}/>}</>)}
-          />)
+          />
         })}
       </Switch>
     </Router>

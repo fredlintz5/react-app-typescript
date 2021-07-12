@@ -1,18 +1,5 @@
-.button:active {
-  box-shadow: 0 1px #666;
-  transform: translateY(2px);
-}
-button.anchor {
-  text-decoration: underline;
-  color: #3498db;
-  cursor: pointer;
-  background: unset;
-  border: unset;
-}
-button:disabled {
-  cursor: not-allowed;
-  box-shadow: unset;
-}
+@import './../../assets/variables.scss';
+
 .button {
   display: inline-block;
   font-weight: 400;
@@ -26,17 +13,36 @@ button:disabled {
   line-height: 1.5;
   border-radius: .25rem;
   box-shadow: 0 2px #999;
-}
-
-.button.is-primary {
-  background-color: rgb(54, 210, 210);
-}
-.button.is-warning {
-  background-color: rgb(239, 239, 81);
-}
-.button.is-danger {
-  background-color: rgb(233, 31, 31);
-}
-.button.is-success {
-  background-color: rgb(55, 222, 99);
+  &.anchor {
+    text-decoration: underline;
+    color: $blue;
+    cursor: pointer;
+    background: unset;
+    border: unset;
+    box-shadow: unset;
+    &:active {
+      box-shadow: unset;
+      transform: unset;
+    }
+  }
+  &:disabled {
+    cursor: not-allowed;
+    box-shadow: unset;
+  }
+  &:active {
+    box-shadow: 0 1px #666;
+    transform: translateY(2px);
+  }
+  &.is-primary {
+    background-color: $primary;
+  }
+  &.is-warning {
+    background-color: $yellow;
+  }
+  &.is-danger {
+    background-color: $red;
+  }
+  &.is-success {
+    background-color: $green
+  }
 }

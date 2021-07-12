@@ -1,0 +1,36 @@
+$rems: (0: 0, 1: 0.25, 2: 0.5, 3: 0.75, 4: 1, 5: 1.5, 6: 3);
+$sides: (t: top, b: bottom, l: left, r: right);
+
+/*
+  Add global margin(top, bottom, sides) and padding(top, bottom, side) spacing helpers
+  mt-1, mt-2, mt-3, pb-0, pb-1 etc...
+*/
+@each $num, $rem in $rems {
+  @each $label, $side in $sides {
+    .m#{$label}-#{$num} {
+      margin-#{$side}: #{$rem}rem !important;
+    }
+  
+    .p#{$label}-#{$rem} {
+      padding-#{$side}: #{$rem}rem !important;
+    }
+  }
+}
+
+/*
+  Add global margin and padding spacing helpers
+  m-1, m-2, m-3, p-0, p-1 etc... 
+*/
+@each $num, $rem in $rems {
+  .m-#{$num} {
+    margin: #{$rem}rem !important;
+  }
+
+  .p-#{$num} {
+    padding: #{$rem}rem !important;
+  }
+}
+
+.ml-auto {
+  margin-left: auto;
+}
